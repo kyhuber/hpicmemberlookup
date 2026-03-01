@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HPIC Member Lookup</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f4f8;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 40px;
+      max-width: 480px;
+      width: 100%;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .logo {
+      text-align: center;
+      margin-bottom: 8px;
+      font-size: 13px;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    h1 {
+      text-align: center;
+      color: #1B2A4A;
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 32px;
+    }
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 8px;
+    }
+    input[type=email] {
+      width: 100%;
+      padding: 14px 16px;
+      font-size: 16px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input[type=email]:focus { border-color: #1B2A4A; }
+    button {
+      width: 100%;
+      padding: 14px;
+      background: #1B2A4A;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 16px;
+      transition: background 0.2s;
+    }
+    button:hover { background: #243a63; }
+    button:disabled { background: #aaa; cursor: not-allowed; }
+    #result {
+      margin-top: 24px;
+      padding: 20px;
+      border-radius: 8px;
+      display: none;
+    }
+    #result.active { background: #d4edda; border: 2px solid #28a745; }
+    #result.lapsed { background: #fff3cd; border: 2px solid #ffc107; }
+    #result.none   { background: #f8d7da; border: 2px solid #dc3545; }
+    #result.error  { background: #f8d7da; border: 2px solid #dc3545; }
+    .status-icon { font-size: 32px; text-align: center; margin-bottom: 8px; }
+    .status-name { font-size: 20px; font-weight: bold; text-align: center; color: #1B2A4A; margin-bottom: 4px; }
+    .status-label { font-size: 15px; text-align: center; font-weight: bold; margin-bottom: 12px; }
+    .status-detail { font-size: 14px; color: #444; line-height: 1.6; }
+    .reset-btn {
+      width: 100%; padding: 10px;
+      background: none; border: 2px solid #1B2A4A;
+      border-radius: 8px; color: #1B2A4A;
+      font-size: 14px; cursor: pointer; margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">Highland Park Improvement Club</div>
+    <h1>Member Lookup</h1>
+    <p class="subtitle">Enter an email address to check membership status</p>
+
+    <div id="form-section">
+      <label for="email">Email Address</label>
+      <input type="email" id="email" placeholder="member@example.com" autocomplete="off">
+      <button id="lookup-btn" onclick="lookup()">Check Status</button>
+    </div>
+
+    <div id="result">
+      <div class="status-icon" id="result-icon"></div>
+      <div class="status-name" id="result-name"></div>
+      <div class="status-label" id="result-label"></div>
+      <div class="status-detail" id="result-detail"></div>
+      <button class="reset-btn" onclick="reset()">Look up another member</button>
+    </div>
+  </div>
+
+  <script>
+    // *** REPLACE THIS WITH YOUR CLOUDFLARE WORKER URL ***
+    const WORKER_URL = 'https://squarespacememberlookup.kyhuber-ft.workers.dev/';
+
+    function formatDate(dateStr) {
+      if (!dateStr) return 'No expiration date';
+      const d = new Date(dateStr + 'T00:00:00');
+      return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    async function lookup() {
+      const email = document.getElementById('email').value.trim();
+      if (!email) { alert('Please enter an email address.'); return; }
+
+      const btn = document.getElementById('lookup-btn');
+      btn.disabled = true;
+      btn.textContent = 'Looking up...';
+
+      try {
+        const resp = await fetch(WORKER_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        const data = await resp.json();
+        showResult(data);
+      } catch (e) {
+        showResult({ error: true });
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Check Status';
+      }
+    }
+
+    function showResult(data) {
+      const resultDiv = document.getElementById('result');
+      const icon = document.getElementById('result-icon');
+      const name = document.getElementById('result-name');
+      const label = document.getElementById('result-label');
+      const detail = document.getElementById('result-detail');
+
+      resultDiv.className = '';
+      resultDiv.style.display = 'block';
+
+      if (data.error || !data) {
+        resultDiv.classList.add('error');
+        icon.textContent = '⚠️';
+        name.textContent = 'Error';
+        label.textContent = 'Could not connect. Try again.';
+        detail.textContent = '';
+        return;
+      }
+
+      if (!data.found) {
+        resultDiv.classList.add('none');
+        icon.textContent = '❌';
+        name.textContent = 'Not Found';
+        label.textContent = 'No record for this email';
+        detail.textContent = 'This email is not in our system. They may have used a different address when joining.';
+        return;
+      }
+
+      const fullName = [data.firstName, data.lastName].filter(Boolean).join(' ');
+
+      if (data.status === 'active') {
+        resultDiv.classList.add('active');
+        icon.textContent = '✅';
+        name.textContent = fullName || 'Member';
+        label.textContent = 'Active Member';
+        detail.innerHTML = `<strong>Level:</strong> ${data.level || 'Member'}<br>
+          <strong>Expires:</strong> ${formatDate(data.endDate)}`;
+      } else if (data.status === 'lapsed') {
+        resultDiv.classList.add('lapsed');
+        icon.textContent = '⚠️';
+        name.textContent = fullName || 'Former Member';
+        label.textContent = 'Membership Lapsed';
+        detail.innerHTML = `<strong>Level:</strong> ${data.level || 'Member'}<br>
+          <strong>Expired:</strong> ${formatDate(data.endDate)}`;
+      } else {
+        resultDiv.classList.add('none');
+        icon.textContent = '❌';
+        name.textContent = fullName || 'No Membership';
+        label.textContent = 'No Active Membership';
+        detail.textContent = 'This person is in our system but has no membership on record.';
+      }
+    }
+
+    function reset() {
+      document.getElementById('email').value = '';
+      document.getElementById('result').style.display = 'none';
+      document.getElementById('email').focus();
+    }
+
+    document.getElementById('email').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') lookup();
+    });
+  </script>
+</body>
+</html>
