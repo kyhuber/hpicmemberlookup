@@ -4,215 +4,755 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HPIC Member Lookup</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --navy: #1B2A4A;
+      --navy-deep: #111c33;
+      --navy-mid: #243660;
+      --gold: #C9922A;
+      --gold-light: #e8b84b;
+      --cream: #F5F0E8;
+      --cream-dark: #ede5d4;
+      --green: #2d7a4f;
+      --green-light: #d4edda;
+      --amber: #92600a;
+      --amber-light: #fff3cd;
+      --red: #8b2020;
+      --red-light: #f8d7da;
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      font-family: Arial, sans-serif;
-      background: #f0f4f8;
+      font-family: 'Source Sans 3', sans-serif;
+      background: var(--navy-deep);
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 24px;
+      position: relative;
+      overflow-x: hidden;
     }
+
+    /* Subtle geometric background pattern */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 20% 20%, rgba(201,146,42,0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(201,146,42,0.06) 0%, transparent 50%),
+        repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 40px,
+          rgba(255,255,255,0.015) 40px,
+          rgba(255,255,255,0.015) 41px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Sunburst rays behind the card */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 900px;
+      height: 900px;
+      background: conic-gradient(
+        from 0deg,
+        transparent 0deg, transparent 8deg,
+        rgba(201,146,42,0.04) 8deg, rgba(201,146,42,0.04) 10deg,
+        transparent 10deg, transparent 18deg,
+        rgba(201,146,42,0.04) 18deg, rgba(201,146,42,0.04) 20deg,
+        transparent 20deg, transparent 28deg,
+        rgba(201,146,42,0.04) 28deg, rgba(201,146,42,0.04) 30deg,
+        transparent 30deg, transparent 38deg,
+        rgba(201,146,42,0.04) 38deg, rgba(201,146,42,0.04) 40deg,
+        transparent 40deg, transparent 48deg,
+        rgba(201,146,42,0.04) 48deg, rgba(201,146,42,0.04) 50deg,
+        transparent 50deg, transparent 58deg,
+        rgba(201,146,42,0.04) 58deg, rgba(201,146,42,0.04) 60deg,
+        transparent 60deg, transparent 68deg,
+        rgba(201,146,42,0.04) 68deg, rgba(201,146,42,0.04) 70deg,
+        transparent 70deg, transparent 78deg,
+        rgba(201,146,42,0.04) 78deg, rgba(201,146,42,0.04) 80deg,
+        transparent 80deg, transparent 88deg,
+        rgba(201,146,42,0.04) 88deg, rgba(201,146,42,0.04) 90deg,
+        transparent 90deg, transparent 98deg,
+        rgba(201,146,42,0.04) 98deg, rgba(201,146,42,0.04) 100deg,
+        transparent 100deg, transparent 108deg,
+        rgba(201,146,42,0.04) 108deg, rgba(201,146,42,0.04) 110deg,
+        transparent 110deg, transparent 118deg,
+        rgba(201,146,42,0.04) 118deg, rgba(201,146,42,0.04) 120deg,
+        transparent 120deg, transparent 128deg,
+        rgba(201,146,42,0.04) 128deg, rgba(201,146,42,0.04) 130deg,
+        transparent 130deg, transparent 138deg,
+        rgba(201,146,42,0.04) 138deg, rgba(201,146,42,0.04) 140deg,
+        transparent 140deg, transparent 148deg,
+        rgba(201,146,42,0.04) 148deg, rgba(201,146,42,0.04) 150deg,
+        transparent 150deg, transparent 158deg,
+        rgba(201,146,42,0.04) 158deg, rgba(201,146,42,0.04) 160deg,
+        transparent 160deg, transparent 168deg,
+        rgba(201,146,42,0.04) 168deg, rgba(201,146,42,0.04) 170deg,
+        transparent 170deg, transparent 178deg,
+        rgba(201,146,42,0.04) 178deg, rgba(201,146,42,0.04) 180deg,
+        transparent 180deg, transparent 188deg,
+        rgba(201,146,42,0.04) 188deg, rgba(201,146,42,0.04) 190deg,
+        transparent 190deg, transparent 198deg,
+        rgba(201,146,42,0.04) 198deg, rgba(201,146,42,0.04) 200deg,
+        transparent 200deg, transparent 208deg,
+        rgba(201,146,42,0.04) 208deg, rgba(201,146,42,0.04) 210deg,
+        transparent 210deg, transparent 218deg,
+        rgba(201,146,42,0.04) 218deg, rgba(201,146,42,0.04) 220deg,
+        transparent 220deg, transparent 228deg,
+        rgba(201,146,42,0.04) 228deg, rgba(201,146,42,0.04) 230deg,
+        transparent 230deg, transparent 238deg,
+        rgba(201,146,42,0.04) 238deg, rgba(201,146,42,0.04) 240deg,
+        transparent 240deg, transparent 248deg,
+        rgba(201,146,42,0.04) 248deg, rgba(201,146,42,0.04) 250deg,
+        transparent 250deg, transparent 258deg,
+        rgba(201,146,42,0.04) 258deg, rgba(201,146,42,0.04) 260deg,
+        transparent 260deg, transparent 268deg,
+        rgba(201,146,42,0.04) 268deg, rgba(201,146,42,0.04) 270deg,
+        transparent 270deg, transparent 278deg,
+        rgba(201,146,42,0.04) 278deg, rgba(201,146,42,0.04) 280deg,
+        transparent 280deg, transparent 288deg,
+        rgba(201,146,42,0.04) 288deg, rgba(201,146,42,0.04) 290deg,
+        transparent 290deg, transparent 298deg,
+        rgba(201,146,42,0.04) 298deg, rgba(201,146,42,0.04) 300deg,
+        transparent 300deg, transparent 308deg,
+        rgba(201,146,42,0.04) 308deg, rgba(201,146,42,0.04) 310deg,
+        transparent 310deg, transparent 318deg,
+        rgba(201,146,42,0.04) 318deg, rgba(201,146,42,0.04) 320deg,
+        transparent 320deg, transparent 328deg,
+        rgba(201,146,42,0.04) 328deg, rgba(201,146,42,0.04) 330deg,
+        transparent 330deg, transparent 338deg,
+        rgba(201,146,42,0.04) 338deg, rgba(201,146,42,0.04) 340deg,
+        transparent 340deg, transparent 348deg,
+        rgba(201,146,42,0.04) 348deg, rgba(201,146,42,0.04) 350deg,
+        transparent 350deg, transparent 358deg,
+        rgba(201,146,42,0.04) 358deg, rgba(201,146,42,0.04) 360deg
+      );
+      border-radius: 50%;
+      animation: slowSpin 60s linear infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    @keyframes slowSpin {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    /* Main card */
     .card {
-      background: white;
-      border-radius: 12px;
-      padding: 40px;
-      max-width: 480px;
+      background: var(--cream);
+      border-radius: 4px;
+      max-width: 460px;
       width: 100%;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      position: relative;
+      z-index: 1;
+      box-shadow:
+        0 0 0 1px rgba(201,146,42,0.3),
+        0 0 0 4px var(--navy),
+        0 0 0 5px rgba(201,146,42,0.2),
+        0 30px 80px rgba(0,0,0,0.6);
+      animation: cardReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
-    .logo {
+
+    @keyframes cardReveal {
+      from { opacity: 0; transform: translateY(24px) scale(0.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Gold top bar */
+    .card-top-bar {
+      height: 5px;
+      background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold));
+      border-radius: 4px 4px 0 0;
+    }
+
+    /* Header section */
+    .card-header {
+      background: var(--navy);
+      padding: 32px 40px 28px;
       text-align: center;
-      margin-bottom: 8px;
-      font-size: 13px;
-      color: #888;
+      position: relative;
+    }
+
+    .card-header::after {
+      content: '';
+      position: absolute;
+      bottom: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 14px solid transparent;
+      border-right: 14px solid transparent;
+      border-top: 12px solid var(--navy);
+      z-index: 2;
+    }
+
+    .logo-wrap {
+      margin-bottom: 16px;
+      animation: logoFloat 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+    }
+
+    @keyframes logoFloat {
+      from { opacity: 0; transform: translateY(-12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo-wrap img {
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4));
+    }
+
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--cream);
+      letter-spacing: 0.5px;
+      line-height: 1.1;
+      animation: fadeUp 0.6s ease 0.25s both;
+    }
+
+    .card-title span {
+      color: var(--gold-light);
+    }
+
+    .card-tagline {
+      font-size: 11px;
+      color: rgba(201,146,42,0.8);
+      letter-spacing: 2.5px;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      margin-top: 6px;
+      font-weight: 600;
+      animation: fadeUp 0.6s ease 0.35s both;
     }
-    h1 {
-      text-align: center;
-      color: #1B2A4A;
-      font-size: 24px;
-      margin-bottom: 8px;
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-    .subtitle {
-      text-align: center;
-      color: #666;
-      font-size: 14px;
-      margin-bottom: 32px;
+
+    /* Form section */
+    .card-body {
+      padding: 44px 40px 36px;
     }
-    label {
+
+    .field-label {
       display: block;
-      font-size: 14px;
-      font-weight: bold;
-      color: #333;
-      margin-bottom: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--navy);
+      margin-bottom: 10px;
     }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-wrap svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--navy);
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
     input[type=email] {
       width: 100%;
-      padding: 14px 16px;
-      font-size: 16px;
-      border: 2px solid #ddd;
-      border-radius: 8px;
+      padding: 14px 16px 14px 42px;
+      font-size: 15px;
+      font-family: 'Source Sans 3', sans-serif;
+      border: 2px solid var(--cream-dark);
+      border-radius: 3px;
+      background: white;
+      color: var(--navy-deep);
       outline: none;
-      transition: border-color 0.2s;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    input[type=email]:focus { border-color: #1B2A4A; }
-    button {
+
+    input[type=email]:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(201,146,42,0.15);
+    }
+
+    input[type=email]::placeholder { color: #aaa; }
+
+    .lookup-btn {
       width: 100%;
-      padding: 14px;
-      background: #1B2A4A;
-      color: white;
+      padding: 15px;
+      background: var(--navy);
+      color: var(--cream);
       border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: bold;
+      border-radius: 3px;
+      font-size: 13px;
+      font-family: 'Source Sans 3', sans-serif;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
       cursor: pointer;
-      margin-top: 16px;
+      margin-top: 14px;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .lookup-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 40%, rgba(201,146,42,0.15) 100%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .lookup-btn:hover { background: var(--navy-mid); }
+    .lookup-btn:hover::before { opacity: 1; }
+    .lookup-btn:active { transform: scale(0.99); }
+    .lookup-btn:disabled { background: #999; cursor: not-allowed; transform: none; }
+
+    /* Gold divider */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0 0;
+      opacity: 0.4;
+    }
+    .divider-line { flex: 1; height: 1px; background: var(--gold); }
+    .divider-star { color: var(--gold); font-size: 10px; }
+
+    /* Result card */
+    #result {
+      margin-top: 20px;
+      border-radius: 3px;
+      display: none;
+      overflow: hidden;
+      animation: resultReveal 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    @keyframes resultReveal {
+      from { opacity: 0; transform: translateY(10px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .result-header {
+      padding: 20px 24px 16px;
+      text-align: center;
+    }
+
+    .result-body {
+      padding: 0 24px 20px;
+    }
+
+    #result.active .result-header { background: var(--green); }
+    #result.lapsed .result-header { background: #7a5c0a; }
+    #result.none .result-header   { background: var(--red); }
+    #result.error .result-header  { background: #555; }
+
+    #result.active { border: 2px solid var(--green); }
+    #result.lapsed { border: 2px solid #b8860b; }
+    #result.none   { border: 2px solid var(--red); }
+    #result.error  { border: 2px solid #888; }
+
+    #result.active .result-body { background: var(--green-light); }
+    #result.lapsed .result-body { background: var(--amber-light); }
+    #result.none .result-body   { background: var(--red-light); }
+    #result.error .result-body  { background: #f0f0f0; }
+
+    .result-icon {
+      font-size: 36px;
+      margin-bottom: 6px;
+      display: block;
+      animation: iconPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+    }
+
+    @keyframes iconPop {
+      from { transform: scale(0) rotate(-15deg); opacity: 0; }
+      to { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    .result-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 4px;
+    }
+
+    .result-status {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.8);
+    }
+
+    .result-detail {
+      font-size: 14px;
+      color: var(--navy-deep);
+      line-height: 1.9;
+      padding-top: 4px;
+    }
+
+    .result-detail strong {
+      font-weight: 600;
+      color: var(--navy);
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      display: inline-block;
+      min-width: 60px;
+    }
+
+    .result-message {
+      font-size: 14px;
+      color: #444;
+      line-height: 1.6;
+      padding-top: 4px;
+    }
+
+    .renew-link {
+      display: block;
+      text-align: center;
+      margin-top: 12px;
+      padding: 10px;
+      background: var(--navy);
+      color: var(--cream);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      border-radius: 3px;
       transition: background 0.2s;
     }
-    button:hover { background: #243a63; }
-    button:disabled { background: #aaa; cursor: not-allowed; }
-    #result {
-      margin-top: 24px;
-      padding: 20px;
-      border-radius: 8px;
-      display: none;
-    }
-    #result.active { background: #d4edda; border: 2px solid #28a745; }
-    #result.lapsed { background: #fff3cd; border: 2px solid #ffc107; }
-    #result.none   { background: #f8d7da; border: 2px solid #dc3545; }
-    #result.error  { background: #f8d7da; border: 2px solid #dc3545; }
-    .status-icon { font-size: 32px; text-align: center; margin-bottom: 8px; }
-    .status-name { font-size: 20px; font-weight: bold; text-align: center; color: #1B2A4A; margin-bottom: 4px; }
-    .status-label { font-size: 15px; text-align: center; font-weight: bold; margin-bottom: 12px; }
-    .status-detail { font-size: 14px; color: #444; line-height: 1.6; }
+    .renew-link:hover { background: var(--navy-mid); }
+
     .reset-btn {
-      width: 100%; padding: 10px;
-      background: none; border: 2px solid #1B2A4A;
-      border-radius: 8px; color: #1B2A4A;
-      font-size: 14px; cursor: pointer; margin-top: 16px;
+      width: 100%;
+      padding: 10px;
+      background: transparent;
+      border: 1px solid rgba(27,42,74,0.3);
+      border-radius: 3px;
+      color: var(--navy);
+      font-size: 12px;
+      font-family: 'Source Sans 3', sans-serif;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: 12px;
+      transition: all 0.2s;
+    }
+    .reset-btn:hover {
+      background: var(--navy);
+      color: var(--cream);
+      border-color: var(--navy);
+    }
+
+    /* Footer */
+    .card-footer {
+      padding: 16px 40px 24px;
+      text-align: center;
+      border-top: 1px solid var(--cream-dark);
+    }
+
+    .card-footer p {
+      font-size: 11px;
+      color: #999;
+      letter-spacing: 0.5px;
+    }
+
+    /* Confetti canvas */
+    #confetti-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    /* Loading spinner inside button */
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(245,240,232,0.4);
+      border-top-color: var(--cream);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="logo">Highland Park Improvement Club</div>
-    <h1>Member Lookup</h1>
-    <p class="subtitle">Enter an email address to check membership status</p>
 
+<canvas id="confetti-canvas"></canvas>
+
+<div class="card">
+  <div class="card-top-bar"></div>
+
+  <div class="card-header">
+    <div class="logo-wrap">
+      <img src="HPIC-Rebuilding-Together-Logo-200x200-1.png" alt="Highland Park Improvement Club">
+    </div>
+    <h1 class="card-title">Neighbor <span>Lookup</span></h1>
+    <p class="card-tagline">Est. 1919 &nbsp;·&nbsp; Rebuilding Together</p>
+  </div>
+
+  <div class="card-body">
     <div id="form-section">
-      <label for="email">Email Address</label>
-      <input type="email" id="email" placeholder="member@example.com" autocomplete="off">
-      <button id="lookup-btn" onclick="lookup()">Check Status</button>
+      <label class="field-label" for="email">Email Address</label>
+      <div class="input-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+          <polyline points="22,6 12,13 2,6"/>
+        </svg>
+        <input type="email" id="email" placeholder="neighbor@example.com" autocomplete="off">
+      </div>
+      <button class="lookup-btn" id="lookup-btn" onclick="lookup()">
+        Check Membership
+      </button>
     </div>
 
     <div id="result">
-      <div class="status-icon" id="result-icon"></div>
-      <div class="status-name" id="result-name"></div>
-      <div class="status-label" id="result-label"></div>
-      <div class="status-detail" id="result-detail"></div>
-      <button class="reset-btn" onclick="reset()">Look up another member</button>
+      <div class="result-header">
+        <span class="result-icon" id="result-icon"></span>
+        <div class="result-name" id="result-name"></div>
+        <div class="result-status" id="result-status"></div>
+      </div>
+      <div class="result-body">
+        <div id="result-detail"></div>
+        <button class="reset-btn" onclick="reset()">↩ Look up another neighbor</button>
+      </div>
+    </div>
+
+    <div class="divider">
+      <div class="divider-line"></div>
+      <span class="divider-star">✦</span>
+      <div class="divider-line"></div>
     </div>
   </div>
 
-  <script>
-    const WORKER_URL = 'https://hpicmemberlookup.kyhuber-ft.workers.dev/';
+  <div class="card-footer">
+    <p>For volunteers only &nbsp;·&nbsp; Highland Park Improvement Club</p>
+  </div>
+</div>
 
-    function formatDate(dateStr) {
-      if (!dateStr) return 'No expiration date';
-      const d = new Date(dateStr + 'T00:00:00');
-      return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-    }
+<script>
+  // *** REPLACE WITH YOUR CLOUDFLARE WORKER URL ***
+  const WORKER_URL = 'YOUR_WORKER_URL_HERE';
 
-    async function lookup() {
-      const email = document.getElementById('email').value.trim();
-      if (!email) { alert('Please enter an email address.'); return; }
+  function formatDate(dateStr) {
+    if (!dateStr) return null;
+    const d = new Date(dateStr + 'T00:00:00');
+    return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  }
 
-      const btn = document.getElementById('lookup-btn');
-      btn.disabled = true;
-      btn.textContent = 'Looking up...';
-
-      try {
-        const resp = await fetch(WORKER_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email })
-        });
-        const data = await resp.json();
-        showResult(data);
-      } catch (e) {
-        showResult({ error: true });
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Check Status';
-      }
-    }
-
-    function showResult(data) {
-      const resultDiv = document.getElementById('result');
-      const icon = document.getElementById('result-icon');
-      const name = document.getElementById('result-name');
-      const label = document.getElementById('result-label');
-      const detail = document.getElementById('result-detail');
-
-      resultDiv.className = '';
-      resultDiv.style.display = 'block';
-
-      if (data.error || !data) {
-        resultDiv.classList.add('error');
-        icon.textContent = '⚠️';
-        name.textContent = 'Error';
-        label.textContent = 'Could not connect. Try again.';
-        detail.textContent = '';
-        return;
-      }
-
-      if (!data.found) {
-        resultDiv.classList.add('none');
-        icon.textContent = '❌';
-        name.textContent = 'Not Found';
-        label.textContent = 'No record for this email';
-        detail.textContent = 'This email is not in our system. They may have used a different address when joining.';
-        return;
-      }
-
-      const fullName = [data.firstName, data.lastName].filter(Boolean).join(' ');
-
-      if (data.status === 'active') {
-        resultDiv.classList.add('active');
-        icon.textContent = '✅';
-        name.textContent = fullName || 'Member';
-        label.textContent = 'Active Member';
-        detail.innerHTML = `<strong>Level:</strong> ${data.level || 'Member'}<br>
-          <strong>Expires:</strong> ${formatDate(data.endDate)}`;
-      } else if (data.status === 'lapsed') {
-        resultDiv.classList.add('lapsed');
-        icon.textContent = '⚠️';
-        name.textContent = fullName || 'Former Member';
-        label.textContent = 'Membership Lapsed';
-        detail.innerHTML = `<strong>Level:</strong> ${data.level || 'Member'}<br>
-          <strong>Expired:</strong> ${formatDate(data.endDate)}`;
-      } else {
-        resultDiv.classList.add('none');
-        icon.textContent = '❌';
-        name.textContent = fullName || 'No Membership';
-        label.textContent = 'No Active Membership';
-        detail.textContent = 'This person is in our system but has no membership on record.';
-      }
-    }
-
-    function reset() {
-      document.getElementById('email').value = '';
-      document.getElementById('result').style.display = 'none';
+  async function lookup() {
+    const email = document.getElementById('email').value.trim();
+    if (!email) {
       document.getElementById('email').focus();
+      document.getElementById('email').style.borderColor = '#dc3545';
+      setTimeout(() => document.getElementById('email').style.borderColor = '', 1200);
+      return;
     }
 
-    document.getElementById('email').addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') lookup();
-    });
-  </script>
+    const btn = document.getElementById('lookup-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Checking...';
+
+    try {
+      const resp = await fetch(WORKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const data = await resp.json();
+      showResult(data);
+    } catch (e) {
+      showResult({ error: true });
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = 'Check Membership';
+    }
+  }
+
+  function showResult(data) {
+    const resultDiv  = document.getElementById('result');
+    const icon       = document.getElementById('result-icon');
+    const name       = document.getElementById('result-name');
+    const status     = document.getElementById('result-status');
+    const detail     = document.getElementById('result-detail');
+
+    // Reset
+    resultDiv.className = '';
+    resultDiv.style.display = 'none';
+
+    // Force reflow for re-animation
+    void resultDiv.offsetWidth;
+    resultDiv.style.display = 'block';
+
+    if (data.error) {
+      resultDiv.classList.add('error');
+      icon.textContent = '⚠️';
+      name.textContent = 'Connection Error';
+      status.textContent = 'Please try again';
+      detail.innerHTML = '<p class="result-message">Could not reach the membership database. Check your connection and try again.</p>';
+      return;
+    }
+
+    if (!data.found) {
+      resultDiv.classList.add('none');
+      icon.textContent = '🏘️';
+      name.textContent = 'Neighbor Not Found';
+      status.textContent = 'No record on file';
+      detail.innerHTML = `
+        <p class="result-message">No record found for this email address. They may have joined under a different email, or may not yet be a member.</p>
+        <a class="renew-link" href="https://hpic1919.org/donate" target="_blank">→ Join HPIC Today</a>
+      `;
+      return;
+    }
+
+    const fullName = [data.firstName, data.lastName].filter(Boolean).join(' ');
+
+    if (data.status === 'active') {
+      resultDiv.classList.add('active');
+      icon.textContent = '🏡';
+      name.textContent = fullName || 'Active Member';
+      status.textContent = 'Welcome to the neighborhood!';
+      const expiry = formatDate(data.endDate);
+      detail.innerHTML = `
+        <p class="result-detail">
+          <strong>Level</strong> ${data.level || 'Member'}<br>
+          <strong>Since</strong> ${formatDate(data.startDate) || '—'}<br>
+          <strong>Expires</strong> ${expiry || 'No expiration date'}
+        </p>
+      `;
+      launchConfetti();
+      return;
+    }
+
+    if (data.status === 'lapsed') {
+      resultDiv.classList.add('lapsed');
+      icon.textContent = '😴';
+      name.textContent = fullName || 'Former Member';
+      status.textContent = 'Membership is taking a nap';
+      const expiry = formatDate(data.endDate);
+      detail.innerHTML = `
+        <p class="result-detail">
+          <strong>Level</strong> ${data.level || 'Member'}<br>
+          <strong>Expired</strong> ${expiry || '—'}
+        </p>
+        <a class="renew-link" href="https://hpic1919.org/donate" target="_blank">→ Wake It Up — Renew Today</a>
+      `;
+      return;
+    }
+
+    // In system but no membership
+    resultDiv.classList.add('none');
+    icon.textContent = '📋';
+    name.textContent = fullName || 'Neighbor Found';
+    status.textContent = 'No active membership';
+    detail.innerHTML = `
+      <p class="result-message">This neighbor is in our system but doesn't have a current membership on record.</p>
+      <a class="renew-link" href="https://hpic1919.org/donate" target="_blank">→ Become a Member</a>
+    `;
+  }
+
+  function reset() {
+    document.getElementById('email').value = '';
+    const resultDiv = document.getElementById('result');
+    resultDiv.style.display = 'none';
+    document.getElementById('email').focus();
+  }
+
+  document.getElementById('email').addEventListener('keydown', e => {
+    if (e.key === 'Enter') lookup();
+  });
+
+  // ── Confetti ──────────────────────────────────────────────────────────────
+  function launchConfetti() {
+    const canvas = document.getElementById('confetti-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const colors = ['#C9922A', '#e8b84b', '#1B2A4A', '#F5F0E8', '#2d7a4f', '#ffffff'];
+    const pieces = [];
+
+    for (let i = 0; i < 120; i++) {
+      pieces.push({
+        x: Math.random() * canvas.width,
+        y: -10 - Math.random() * 200,
+        r: 4 + Math.random() * 6,
+        d: 2 + Math.random() * 4,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        tilt: Math.random() * 10 - 5,
+        tiltAngle: 0,
+        tiltSpeed: 0.05 + Math.random() * 0.1,
+        shape: Math.random() > 0.5 ? 'rect' : 'circle',
+        opacity: 1
+      });
+    }
+
+    let frame = 0;
+    const maxFrames = 180;
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      pieces.forEach(p => {
+        ctx.save();
+        ctx.globalAlpha = p.opacity;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        if (p.shape === 'circle') {
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        } else {
+          ctx.rect(p.x - p.r, p.y - p.r * 0.5, p.r * 2, p.r);
+        }
+        ctx.fill();
+        ctx.restore();
+
+        p.y += p.d;
+        p.x += Math.sin(p.tiltAngle) * 1.5;
+        p.tiltAngle += p.tiltSpeed;
+        if (frame > maxFrames * 0.6) p.opacity -= 0.015;
+      });
+
+      frame++;
+      if (frame < maxFrames) {
+        requestAnimationFrame(draw);
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    draw();
+  }
+</script>
 </body>
 </html>
