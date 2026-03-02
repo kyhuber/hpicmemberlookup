@@ -496,27 +496,24 @@
     }
     .renew-link:hover { background: var(--navy-mid); }
 
-    .reset-btn {
-      width: 100%;
-      padding: 10px;
-      background: transparent;
-      border: 1px solid rgba(27,42,74,0.3);
-      border-radius: 3px;
-      color: var(--navy);
+    .reset-link {
+      display: block;
+      text-align: center;
+      margin-top: 14px;
       font-size: 12px;
       font-family: 'Source Sans 3', sans-serif;
       font-weight: 600;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--navy);
+      opacity: 0.45;
       cursor: pointer;
-      margin-top: 12px;
-      transition: all 0.2s;
+      background: none;
+      border: none;
+      padding: 4px;
+      width: 100%;
+      transition: opacity 0.2s;
     }
-    .reset-btn:hover {
-      background: var(--navy);
-      color: var(--cream);
-      border-color: var(--navy);
-    }
+    .reset-link:hover { opacity: 0.85; }
 
     /* Footer */
     .card-footer {
@@ -606,11 +603,11 @@
       </div>
       <div class="result-body">
         <div id="result-detail"></div>
-        <button class="reset-btn" onclick="reset()">↩ Look up another neighbor</button>
+        <button class="reset-link" onclick="reset()">← search again</button>
       </div>
     </div>
 
-    <div class="divider">
+    <div class="divider" id="form-divider">
       <div class="divider-line"></div>
       <span class="divider-star">✦</span>
       <div class="divider-line"></div>
@@ -728,6 +725,10 @@
     const status     = document.getElementById('result-status');
     const detail     = document.getElementById('result-detail');
 
+    // Hide the search form and divider, show only the result
+    document.getElementById('form-section').style.display = 'none';
+    document.getElementById('form-divider').style.display = 'none';
+
     // Reset
     resultDiv.className = '';
     resultDiv.style.display = 'none';
@@ -804,13 +805,18 @@
   }
 
   function reset() {
+    // Hide result, restore form and divider
+    document.getElementById('result').style.display = 'none';
+    document.getElementById('form-section').style.display = 'block';
+    document.getElementById('form-divider').style.display = 'flex';
+
+    // Clear the input and badges
     const input = document.getElementById('search');
     input.value = '';
     document.getElementById('input-wrap').classList.remove('phone-mode');
     const badge = document.getElementById('detected-type');
     badge.classList.remove('visible');
     badge.textContent = '';
-    document.getElementById('result').style.display = 'none';
     input.focus();
   }
 
